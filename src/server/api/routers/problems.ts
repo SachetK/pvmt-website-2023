@@ -15,7 +15,9 @@ export const problemsRouter = createTRPCRouter({
 
       return await ctx.prisma.problem.findMany({
         where: {
-          category: input,
+          competition: {
+            type: input,
+          },
         },
       });
     }),
