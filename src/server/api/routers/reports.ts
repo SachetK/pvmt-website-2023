@@ -77,16 +77,12 @@ export const reportsRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input: { userId, contest, endTime, answers }, ctx }) => {
-      const report = await ctx.prisma.report.update({
+      const report = await ctx.prisma.report.findUnique({
         where: {
           id: {
             userId,
             subject: contest,
           },
-        },
-        data: {
-          draft: false,
-          endTime,
         },
         include: {
           competition: {
@@ -101,7 +97,7 @@ export const reportsRouter = createTRPCRouter({
 
       answers.forEach(({ problemId, answer }) => {
         if (
-          report.competition.problems.find(
+          report?.competition.problems.find(
             (problem) => problem.id === problemId
           )?.answer === answer
         ) {
@@ -109,6 +105,48 @@ export const reportsRouter = createTRPCRouter({
         }
       });
 
-      return score;
+      return await ctx.prisma.report.update({
+        where: {
+          id: {
+            userId,
+            subject: contest,
+          },
+        },
+        data: {
+          draft: false,
+          score,
+          endTime,
+        },
+      });
+    }),
+
+  byScore: publicProcedure
+    .input(
+      z.object({
+        contest: z.enum([
+          "ALGEBRA",
+          "GEOMETRY",
+          "COMBINATORICS",
+          "TEAM",
+          "TIEBREAKER",
+        ]),
+      })
+    )
+    .query(async ({ input: { contest }, ctx }) => {
+      return await ctx.prisma.report.findMany({
+        where: {
+          competition: {
+            type: contest,
+          },
+        },
+
+        orderBy: {
+          score: "desc",
+        },
+
+        include: {
+          student: true,
+        },
+      });
     }),
 });

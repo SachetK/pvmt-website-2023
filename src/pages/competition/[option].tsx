@@ -49,7 +49,6 @@ const Test: React.FC<{
           })
           .filter((x) => x !== null);
 
-
         void submitTest({
           userId,
           contest: option,
@@ -67,7 +66,11 @@ const Test: React.FC<{
           <div className="flex flex-row space-x-2">
             <label>
               <span>Answer:</span>
-              <input id={`${problem.id}-answer`} name={`${problem.id}-answer`} type="number" />
+              <input
+                id={`${problem.id}-answer`}
+                name={`${problem.id}-answer`}
+                type="number"
+              />
             </label>
           </div>
         </div>
@@ -80,19 +83,24 @@ const CompetitionPage: NextPage<{ option: Uppercase<Option> }> = ({
   option,
 }) => {
   const { data: session, status } = useSession();
-  
+
   const { data: report } = api.reports.byUser.useQuery({
-    userId: session?.user.id ?? '',
+    userId: session?.user.id ?? "",
     contest: option,
   });
 
-  const { mutate: startTest } = api.reports.startTest.useMutation();
+  const { mutate: startTest } = api.reports.startTest.useMutation({
+    onSuccess: () => {
+      void api.useContext().reports.byUser.invalidate({
+        userId: session?.user.id ?? "",
+        contest: option,
+      });
+    },
+  });
 
   if (status === "loading") return <div>Loading...</div>;
   if (status !== "authenticated")
     return <ErrorComponent statusCode={500} title={"Unauthenticated"} />;
-
-  
 
   return (
     <div className="flex min-h-screen flex-col">
