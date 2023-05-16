@@ -6,11 +6,11 @@ import type { Option } from "~/utils/options";
 export function getStaticPaths() {
   return {
     paths: [
-      { params: { option: "algebra" } },
-      { params: { option: "geometry" } },
-      { params: { option: "combinatorics" } },
-      { params: { option: "team" } },
-      { params: { option: "tiebreaker" } },
+      { params: { contest: "algebra" } },
+      { params: { contest: "geometry" } },
+      { params: { contest: "combinatorics" } },
+      { params: { contest: "team" } },
+      { params: { contest: "tiebreaker" } },
     ],
     fallback: false,
   };
