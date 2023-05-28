@@ -2,6 +2,7 @@ import type { GetStaticProps, NextPage } from "next";
 import { useSession } from "next-auth/react";
 import ErrorComponent from "next/error";
 import { z } from "zod";
+import { LoadingPage, LoadingSpinner } from "~/components/loading";
 import { generateSSGHelper } from "~/server/helpers/ssgHelpers";
 import { api } from "~/utils/api";
 import type { Option } from "~/utils/options";
@@ -15,7 +16,7 @@ export function getStaticPaths() {
       { params: { option: "team" } },
       { params: { option: "tiebreaker" } },
     ],
-    fallback: false,
+    fallback: "blocking",
   };
 }
 
@@ -23,10 +24,20 @@ const Test: React.FC<{
   option: Uppercase<Option>;
   userId: string;
 }> = ({ option, userId }) => {
-  const { data: problems } = api.problems.getBySubject.useQuery(option);
-  const { mutate: submitTest } = api.reports.submitTest.useMutation();
+  const { data: problems, isLoading } =
+    api.problems.getBySubject.useQuery(option);
+  const ctx = api.useContext();
+  const { mutateAsync: submitTest } = api.reports.submitTest.useMutation({
+    onSuccess: () => {
+      void ctx.reports.byUser.invalidate({
+        userId,
+        contest: option,
+      });
+    },
+  });
 
   if (!problems) return <div>No problems found</div>;
+  if (isLoading) return <LoadingSpinner />;
 
   return (
     <form
@@ -50,7 +61,6 @@ const Test: React.FC<{
           .filter((x) => x !== null);
 
         void submitTest({
-          userId,
           contest: option,
           endTime: new Date(),
           answers: answers as { problemId: string; answer: number }[],
@@ -79,48 +89,67 @@ const Test: React.FC<{
     </form>
   );
 };
+
 const CompetitionPage: NextPage<{ option: Uppercase<Option> }> = ({
   option,
 }) => {
   const { data: session, status } = useSession();
 
-  const { data: report } = api.reports.byUser.useQuery({
-    userId: session?.user.id ?? "",
-    contest: option,
-  });
+  const ctx = api.useContext();
 
-  const { mutate: startTest } = api.reports.startTest.useMutation({
-    onSuccess: () => {
-      void api.useContext().reports.byUser.invalidate({
-        userId: session?.user.id ?? "",
-        contest: option,
-      });
+  const { data: report, isLoading } = api.reports.byUser.useQuery(
+    {
+      userId: session?.user.id ?? "",
+      contest: option,
     },
-  });
+    {
+      enabled: !!session?.user.id,
+    }
+  );
 
-  if (status === "loading") return <div>Loading...</div>;
+  const { mutateAsync: startTest, isLoading: isStarting } =
+    api.reports.startTest.useMutation({
+      onSuccess: () => {
+        void ctx.reports.byUser.invalidate({
+          userId: session?.user.id ?? "",
+          contest: option,
+        });
+      },
+    });
+
+  if (status === "loading" || isLoading) return <LoadingPage />;
   if (status !== "authenticated")
     return <ErrorComponent statusCode={500} title={"Unauthenticated"} />;
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex h-full max-h-screen min-h-full flex-col gap-4 pt-4">
       <div className="flex flex-row items-center justify-center">
         <h1 className="text-4xl font-bold">{option}</h1>
       </div>
-      {!report && (
-        <button
-          type="button"
-          onClick={() =>
-            void startTest({ userId: session.user.id, contest: option })
-          }
-        >
-          Start Test
-        </button>
-      )}
-      {report?.draft && (
+      <div className="flex h-full flex-row items-center justify-center">
+        {!report && (
+          <button
+            type="button"
+            onClick={() => {
+              void startTest({ contest: option });
+            }}
+            disabled={isStarting}
+            className="w-fit rounded-md bg-blue-500 p-4 font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isStarting ? "Starting..." : "Start Test"}
+          </button>
+        )}
+      </div>
+      {report?.draft ? (
         <div>
           <Test option={option} userId={session.user.id} />
         </div>
+      ) : (
+        report && (
+          <div className="grid w-full grid-cols-1 place-items-center font-bold">
+            All completed! Check your score on the leaderboard!
+          </div>
+        )
       )}
     </div>
   );

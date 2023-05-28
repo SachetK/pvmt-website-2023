@@ -1,30 +1,18 @@
 import type { GetStaticProps, NextPage } from "next";
+import Link from "next/link";
 import { generateSSGHelper } from "~/server/helpers/ssgHelpers";
 import { api } from "~/utils/api";
-import type { Option } from "~/utils/options";
+import { OPTIONS } from "~/utils/options";
 
-export function getStaticPaths() {
-  return {
-    paths: [
-      { params: { contest: "algebra" } },
-      { params: { contest: "geometry" } },
-      { params: { contest: "combinatorics" } },
-      { params: { contest: "team" } },
-      { params: { contest: "tiebreaker" } },
-    ],
-    fallback: false,
-  };
-}
-
-const Leaderboard: NextPage<{ option: Uppercase<Option> }> = ({ option }) => {
+const Leaderboard: NextPage = () => {
   const {
     data,
     hasNextPage,
     fetchNextPage,
     fetchPreviousPage,
     hasPreviousPage,
-  } = api.reports.byScore.useInfiniteQuery(
-    { contest: option },
+  } = api.reports.allByScore.useInfiniteQuery(
+    {},
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
     }
@@ -32,6 +20,20 @@ const Leaderboard: NextPage<{ option: Uppercase<Option> }> = ({ option }) => {
 
   return (
     <div className="flex min-h-screen flex-col">
+      <h1 className="text-center text-3xl font-bold">Leaderboard</h1>
+      <div className="flex flex-row justify-center">
+        {Object.entries(OPTIONS).map(([name, link], idx) => {
+          return (
+            <Link
+              className="bg-slate-400 px-3 py-2 text-center font-semibold transition ease-in-out first:rounded-l-lg last:rounded-r-lg hover:bg-slate-600 hover:text-white"
+              href={`/leaderboard/${encodeURIComponent(link)}`}
+              key={idx}
+            >
+              {name}
+            </Link>
+          );
+        })}
+      </div>
       <table className="mx-[25%] w-1/2 table-auto">
         <thead>
           <tr>
@@ -52,6 +54,7 @@ const Leaderboard: NextPage<{ option: Uppercase<Option> }> = ({ option }) => {
           )}
         </tbody>
       </table>
+
       <div className="flex justify-center">
         {hasPreviousPage && (
           <button
@@ -76,29 +79,14 @@ const Leaderboard: NextPage<{ option: Uppercase<Option> }> = ({ option }) => {
   );
 };
 
-export const getStaticProps: GetStaticProps = async ({ params }) => {
+export const getStaticProps: GetStaticProps = async () => {
   const ssg = generateSSGHelper();
 
-  const contest = params?.contest;
-
-  if (
-    contest !== "algebra" &&
-    contest !== "geometry" &&
-    contest !== "combinatorics" &&
-    contest !== "team" &&
-    contest !== "tiebreaker"
-  ) {
-    throw new Error("invalid option");
-  }
-
-  const test = contest.toUpperCase() as Uppercase<typeof contest>;
-
-  await ssg.reports.byScore.prefetch({ contest: test });
+  await ssg.reports.allByScore.prefetch({});
 
   return {
     props: {
       trpcState: ssg.dehydrate(),
-      option: contest.toUpperCase(),
     },
   };
 };
