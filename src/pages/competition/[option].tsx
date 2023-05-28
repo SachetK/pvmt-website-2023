@@ -143,7 +143,7 @@ const CompetitionPage: NextPage<{ option: Uppercase<Option> }> = ({
       </div>
       {report?.draft ? (
         <div>
-          <Test option={option} userId={session.user.id} />
+          <Test option={option} userId={session?.user.id ?? ''} />
         </div>
       ) : (
         report && (
