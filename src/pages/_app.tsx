@@ -25,8 +25,8 @@ const MyApp: AppType<{ session: Session | null }> = ({
 
 const Header = () => {
   return (
-    <nav className="absolute flex w-full justify-between p-4">
-      <Link href="/">
+    <>
+      <Link href="/" className="absolute top-4 left-4">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -42,7 +42,7 @@ const Header = () => {
           />
         </svg>
       </Link>
-      <Link href="/leaderboard">
+      <Link href="/leaderboard" className=" absolute right-4 top-4">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -58,7 +58,7 @@ const Header = () => {
           />
         </svg>
       </Link>
-    </nav>
+    </>
   );
 };
 
