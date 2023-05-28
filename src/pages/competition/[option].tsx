@@ -1,6 +1,7 @@
 import type { GetStaticProps, NextPage } from "next";
 import { useSession } from "next-auth/react";
 import ErrorComponent from "next/error";
+import Head from "next/head";
 import { z } from "zod";
 import { LoadingPage, LoadingSpinner } from "~/components/loading";
 import { generateSSGHelper } from "~/server/helpers/ssgHelpers";
@@ -116,43 +117,57 @@ const CompetitionPage: NextPage<{ option: Uppercase<Option> }> = ({
         });
       },
     });
-    console.log(status)
-    if (status === "unauthenticated")
-      return <ErrorComponent statusCode={500} title={"Unauthenticated"} />
 
-    if (isLoading || status === "loading") return <LoadingPage />; 
+  if (status === "unauthenticated")
+    return <ErrorComponent statusCode={500} title={"Unauthenticated"} />;
+
+  if (isLoading || status === "loading") return <LoadingPage />;
 
   return (
-    <div className="flex h-full max-h-screen min-h-full flex-col gap-4 pt-4">
-      <div className="flex flex-row items-center justify-center">
-        <h1 className="text-4xl font-bold">{option}</h1>
-      </div>
-      <div className="flex h-full flex-row items-center justify-center">
-        {!report && (
-          <button
-            type="button"
-            onClick={() => {
-              void startTest({ contest: option });
-            }}
-            disabled={isStarting}
-            className="w-fit rounded-md bg-blue-500 p-4 font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {isStarting ? "Starting..." : "Start Test"}
-          </button>
+    <main>
+      <Head>
+        <title>
+          Competition |{" "}
+          {`${option.substring(0, 1)}${option.substring(1).toLowerCase()}`}
+        </title>
+        <meta
+          name="description"
+          content={`Competition page for ${option.toLocaleLowerCase()} `}
+        />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+
+      <div className="flex h-full max-h-screen min-h-full flex-col gap-4 pt-4">
+        <div className="flex flex-row items-center justify-center">
+          <h1 className="text-4xl font-bold">{option}</h1>
+        </div>
+        <div className="flex h-full flex-row items-center justify-center">
+          {!report && (
+            <button
+              type="button"
+              onClick={() => {
+                void startTest({ contest: option });
+              }}
+              disabled={isStarting}
+              className="w-fit rounded-md bg-blue-500 p-4 font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isStarting ? "Starting..." : "Start Test"}
+            </button>
+          )}
+        </div>
+        {report?.draft ? (
+          <div>
+            <Test option={option} userId={session?.user.id ?? ""} />
+          </div>
+        ) : (
+          report && (
+            <div className="grid w-full grid-cols-1 place-items-center font-bold">
+              All completed! Check your score on the leaderboard!
+            </div>
+          )
         )}
       </div>
-      {report?.draft ? (
-        <div>
-          <Test option={option} userId={session?.user.id ?? ''} />
-        </div>
-      ) : (
-        report && (
-          <div className="grid w-full grid-cols-1 place-items-center font-bold">
-            All completed! Check your score on the leaderboard!
-          </div>
-        )
-      )}
-    </div>
+    </main>
   );
 };
 
