@@ -15,6 +15,7 @@ const Home: NextPage = () => {
             key={idx}
             className="p-2 text-center transition ease-in-out first:rounded-tl-xl last:rounded-bl-xl hover:bg-blue-600 focus:bg-blue-600"
             href={`/competition/${encodeURIComponent(link)}`}
+            aria-disabled={status === "unauthenticated"}
           >
             <span>{name}</span>
           </Link>

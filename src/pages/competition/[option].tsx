@@ -116,10 +116,11 @@ const CompetitionPage: NextPage<{ option: Uppercase<Option> }> = ({
         });
       },
     });
+    console.log(status)
+    if (status === "unauthenticated")
+      return <ErrorComponent statusCode={500} title={"Unauthenticated"} />
 
-  if (status === "loading" || isLoading) return <LoadingPage />;
-  if (status !== "authenticated")
-    return <ErrorComponent statusCode={500} title={"Unauthenticated"} />;
+    if (isLoading || status === "loading") return <LoadingPage />; 
 
   return (
     <div className="flex h-full max-h-screen min-h-full flex-col gap-4 pt-4">
