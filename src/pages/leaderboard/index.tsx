@@ -26,7 +26,7 @@ const Leaderboard: NextPage = () => {
         <meta name="description" content="PVMT 2023" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="flex min-h-screen h-full flex-col">
+      <div className="flex h-full min-h-screen flex-col">
         <h1 className="text-center text-3xl font-bold">Leaderboard</h1>
         <div className="flex flex-row justify-center">
           {Object.entries(OPTIONS).map(([name, link], idx) => {

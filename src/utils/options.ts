@@ -3,7 +3,6 @@ export const OPTIONS = {
   GEOMETRY: "geometry",
   COMBINATORICS: "combinatorics",
   TEAM: "team",
-  TIEBREAKER: "tiebreaker",
 } as const;
 
 export type Option = (typeof OPTIONS)[keyof typeof OPTIONS];

@@ -15,7 +15,6 @@ export function getStaticPaths() {
       { params: { option: "geometry" } },
       { params: { option: "combinatorics" } },
       { params: { option: "team" } },
-      { params: { option: "tiebreaker" } },
     ],
     fallback: "blocking",
   };
@@ -28,21 +27,22 @@ const Test: React.FC<{
   const { data: problems, isLoading } =
     api.problems.getBySubject.useQuery(option);
   const ctx = api.useContext();
-  const { mutateAsync: submitTest } = api.reports.submitTest.useMutation({
-    onSuccess: () => {
-      void ctx.reports.byUser.invalidate({
-        userId,
-        contest: option,
-      });
-    },
-  });
+  const { mutateAsync: submitTest, isLoading: isSubmitting } =
+    api.reports.submitTest.useMutation({
+      onSuccess: () => {
+        void ctx.reports.byUser.invalidate({
+          userId,
+          contest: option,
+        });
+      },
+    });
 
   if (!problems) return <div>No problems found</div>;
   if (isLoading) return <LoadingSpinner />;
 
   return (
     <form
-      className="flex flex-col space-y-4"
+      className="flex w-full flex-col items-center space-y-4 pb-4"
       onSubmit={(e) => {
         e.preventDefault();
 
@@ -69,24 +69,37 @@ const Test: React.FC<{
       }}
     >
       {problems.map((problem, idx) => (
-        <div key={idx} className="flex flex-col space-y-2">
-          <div className="flex flex-row space-x-2">
+        <div
+          key={idx}
+          className="flex flex-col space-y-2 rounded-2xl bg-blue-200 p-4"
+        >
+          <div className="flex w-1/2 flex-row space-x-2">
             <span className="font-bold">{idx + 1}.</span>
             <span>{problem.question}</span>
           </div>
           <div className="flex flex-row space-x-2">
             <label>
-              <span>Answer:</span>
+              <span>Answer: </span>
               <input
                 id={`${problem.id}-answer`}
                 name={`${problem.id}-answer`}
                 type="number"
+                className="rounded-md border-2 border-gray-300 focus:appearance-none focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
             </label>
           </div>
         </div>
       ))}
-      <button type="submit">Submit Test</button>
+      <div className="flex flex-row items-center justify-center space-x-2">
+        <button
+          className="w-fit rounded-full border-b-4 border-red-500 bg-red-400 px-3 py-2  active:border-b-2 disabled:cursor-not-allowed disabled:border-opacity-50 disabled:opacity-50"
+          disabled={isSubmitting}
+          type="submit"
+        >
+          Submit Test
+        </button>
+        {isSubmitting && <LoadingSpinner size={36} />}
+      </div>
     </form>
   );
 };
@@ -156,7 +169,7 @@ const CompetitionPage: NextPage<{ option: Uppercase<Option> }> = ({
           )}
         </div>
         {report?.draft ? (
-          <div>
+          <div className="flex w-full justify-center">
             <Test option={option} userId={session?.user.id ?? ""} />
           </div>
         ) : (
@@ -174,17 +187,7 @@ const CompetitionPage: NextPage<{ option: Uppercase<Option> }> = ({
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const ssg = generateSSGHelper();
 
-  const option = params?.option;
-
-  if (
-    option !== "algebra" &&
-    option !== "geometry" &&
-    option !== "combinatorics" &&
-    option !== "team" &&
-    option !== "tiebreaker"
-  ) {
-    throw new Error("invalid option");
-  }
+  const option = z.enum(["algebra", "geometry", "combinatorics", "team"]).parse(params?.option);
 
   const test = option.toUpperCase() as Uppercase<typeof option>;
 

@@ -11,7 +11,6 @@ export const reportsRouter = createTRPCRouter({
           "GEOMETRY",
           "COMBINATORICS",
           "TEAM",
-          "TIEBREAKER",
         ]),
       })
     )
@@ -34,7 +33,6 @@ export const reportsRouter = createTRPCRouter({
           "GEOMETRY",
           "COMBINATORICS",
           "TEAM",
-          "TIEBREAKER",
         ]),
       })
     )
@@ -63,7 +61,6 @@ export const reportsRouter = createTRPCRouter({
           "GEOMETRY",
           "COMBINATORICS",
           "TEAM",
-          "TIEBREAKER",
         ]),
         endTime: z.coerce.date(),
         answers: z
@@ -126,7 +123,6 @@ export const reportsRouter = createTRPCRouter({
           "GEOMETRY",
           "COMBINATORICS",
           "TEAM",
-          "TIEBREAKER",
         ]),
         limit: z.number().default(10),
         cursor: z
@@ -137,7 +133,6 @@ export const reportsRouter = createTRPCRouter({
               "GEOMETRY",
               "COMBINATORICS",
               "TEAM",
-              "TIEBREAKER",
             ]),
           })
           .optional(),
@@ -192,7 +187,6 @@ export const reportsRouter = createTRPCRouter({
               "GEOMETRY",
               "COMBINATORICS",
               "TEAM",
-              "TIEBREAKER",
             ]),
           })
           .optional(),

@@ -111,5 +111,4 @@ enum Category {
   GEOMETRY
   TEAM
   COMBINATORICS
-  TIEBREAKER
 }

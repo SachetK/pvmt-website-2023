@@ -1,5 +1,6 @@
 import type { GetStaticProps, NextPage } from "next";
 import Head from "next/head";
+import { z } from "zod";
 import { generateSSGHelper } from "~/server/helpers/ssgHelpers";
 import { api } from "~/utils/api";
 import type { Option } from "~/utils/options";
@@ -11,7 +12,6 @@ export function getStaticPaths() {
       { params: { contest: "geometry" } },
       { params: { contest: "combinatorics" } },
       { params: { contest: "team" } },
-      { params: { contest: "tiebreaker" } },
     ],
     fallback: false,
   };
@@ -95,17 +95,7 @@ const Leaderboard: NextPage<{ option: Uppercase<Option> }> = ({ option }) => {
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const ssg = generateSSGHelper();
 
-  const contest = params?.contest;
-
-  if (
-    contest !== "algebra" &&
-    contest !== "geometry" &&
-    contest !== "combinatorics" &&
-    contest !== "team" &&
-    contest !== "tiebreaker"
-  ) {
-    throw new Error("invalid option");
-  }
+  const contest = z.enum(["algebra", "geometry", "combinatorics", "team"]).parse(params?.contest);
 
   const test = contest.toUpperCase() as Uppercase<typeof contest>;
 

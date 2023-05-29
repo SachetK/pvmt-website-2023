@@ -26,7 +26,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
 const Header = () => {
   return (
     <>
-      <Link href="/" className="absolute top-4 left-4">
+      <Link href="/" className="absolute left-4 top-4">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
