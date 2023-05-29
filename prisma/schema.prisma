@@ -61,6 +61,10 @@ model User {
   accounts      Account[]
   sessions      Session[]
   reports       Report[]
+  team          Team      @relation(fields: [teamId], references: [id])
+  teamId        String    @unique
+
+  @@index([teamId])
 }
 
 model VerificationToken {
@@ -69,6 +73,14 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Team {
+  id        String   @id @default(cuid())
+  startTime DateTime @default(now())
+  endTime   DateTime @default(now())
+  score     Int      @default(0)
+  members   User[]
 }
 
 model Competition {

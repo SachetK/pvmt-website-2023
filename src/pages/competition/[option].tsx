@@ -21,7 +21,7 @@ export function getStaticPaths() {
 }
 
 const Test: React.FC<{
-  option: Uppercase<Option>;
+  option: Uppercase<Exclude<Option, "team">>;
   userId: string;
 }> = ({ option, userId }) => {
   const { data: problems, isLoading } =
@@ -104,7 +104,7 @@ const Test: React.FC<{
   );
 };
 
-const CompetitionPage: NextPage<{ option: Uppercase<Option> }> = ({
+const CompetitionPage: NextPage<{ option: Uppercase<Exclude<Option, "team">> }> = ({
   option,
 }) => {
   const { data: session, status } = useSession();
@@ -187,9 +187,11 @@ const CompetitionPage: NextPage<{ option: Uppercase<Option> }> = ({
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const ssg = generateSSGHelper();
 
-  const option = z.enum(["algebra", "geometry", "combinatorics", "team"]).parse(params?.option);
+  const option = z
+    .enum(["algebra", "geometry", "combinatorics"])
+    .parse(params?.option);
 
-  const test = option.toUpperCase() as Uppercase<typeof option>;
+  const test = option.toUpperCase() as Uppercase<Exclude<typeof option, "team">>;
 
   await ssg.problems.getBySubject.prefetch(test);
 

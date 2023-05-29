@@ -1,17 +1,16 @@
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "~/server/api/trpc";
 
 export const reportsRouter = createTRPCRouter({
   byUser: publicProcedure
     .input(
       z.object({
         userId: z.string().cuid(),
-        contest: z.enum([
-          "ALGEBRA",
-          "GEOMETRY",
-          "COMBINATORICS",
-          "TEAM",
-        ]),
+        contest: z.enum(["ALGEBRA", "GEOMETRY", "COMBINATORICS"]),
       })
     )
     .query(async ({ input: { userId, contest }, ctx }) => {
@@ -28,12 +27,7 @@ export const reportsRouter = createTRPCRouter({
   startTest: protectedProcedure
     .input(
       z.object({
-        contest: z.enum([
-          "ALGEBRA",
-          "GEOMETRY",
-          "COMBINATORICS",
-          "TEAM",
-        ]),
+        contest: z.enum(["ALGEBRA", "GEOMETRY", "COMBINATORICS"]),
       })
     )
     .mutation(async ({ input: { contest }, ctx }) => {
@@ -56,12 +50,7 @@ export const reportsRouter = createTRPCRouter({
   submitTest: protectedProcedure
     .input(
       z.object({
-        contest: z.enum([
-          "ALGEBRA",
-          "GEOMETRY",
-          "COMBINATORICS",
-          "TEAM",
-        ]),
+        contest: z.enum(["ALGEBRA", "GEOMETRY", "COMBINATORICS"]),
         endTime: z.coerce.date(),
         answers: z
           .object({
@@ -118,22 +107,12 @@ export const reportsRouter = createTRPCRouter({
   byScore: publicProcedure
     .input(
       z.object({
-        contest: z.enum([
-          "ALGEBRA",
-          "GEOMETRY",
-          "COMBINATORICS",
-          "TEAM",
-        ]),
+        contest: z.enum(["ALGEBRA", "GEOMETRY", "COMBINATORICS"]),
         limit: z.number().default(10),
         cursor: z
           .object({
             userId: z.string().cuid(),
-            subject: z.enum([
-              "ALGEBRA",
-              "GEOMETRY",
-              "COMBINATORICS",
-              "TEAM",
-            ]),
+            subject: z.enum(["ALGEBRA", "GEOMETRY", "COMBINATORICS", "TEAM"]),
           })
           .optional(),
       })
@@ -150,9 +129,7 @@ export const reportsRouter = createTRPCRouter({
 
         cursor: cursor ? { id: cursor } : undefined,
 
-        orderBy: {
-          score: "desc",
-        },
+        orderBy: { score: "desc" },
 
         include: {
           student: true,
@@ -182,12 +159,7 @@ export const reportsRouter = createTRPCRouter({
         cursor: z
           .object({
             userId: z.string().cuid(),
-            subject: z.enum([
-              "ALGEBRA",
-              "GEOMETRY",
-              "COMBINATORICS",
-              "TEAM",
-            ]),
+            subject: z.enum(["ALGEBRA", "GEOMETRY", "COMBINATORICS", "TEAM"]),
           })
           .optional(),
       })
