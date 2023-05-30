@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "~/server/api/trpc";
 
 export const teamRouter = createTRPCRouter({
   byId: publicProcedure
@@ -15,10 +19,41 @@ export const teamRouter = createTRPCRouter({
         },
       });
     }),
-  
-    all: publicProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.team.findMany();
-  }),
+
+  byScore: publicProcedure
+    .input(
+      z.object({
+        limit: z.number().default(10),
+        cursor: z
+          .object({
+            id: z.string().cuid(),
+          })
+          .optional(),
+      })
+    )
+    .query(async ({ input: { limit, cursor }, ctx }) => {
+      const teams = await ctx.prisma.team.findMany({
+        orderBy: {
+          score: "desc",
+        },
+        take: limit + 1,
+        cursor: cursor ? cursor : undefined,
+      });
+
+      let nextCursor: typeof cursor | undefined = undefined;
+
+      if (teams.length > limit) {
+        const nextItem = teams.pop();
+        nextCursor = {
+          id: nextItem?.id ?? "",
+        };
+      }
+
+      return {
+        teams,
+        nextCursor,
+      };
+    }),
 
   startTest: protectedProcedure
     .input(
@@ -31,13 +66,15 @@ export const teamRouter = createTRPCRouter({
         where: {
           id: ctx.session.user.id,
         },
-      }); 
+      });
+
+      if (!teamId) throw new Error("Team not found");
 
       return await ctx.prisma.team.update({
         where: {
           id: teamId,
         },
-        
+
         data: {
           startTime,
         },
@@ -60,9 +97,11 @@ export const teamRouter = createTRPCRouter({
       const { teamId } = await ctx.prisma.user.findUniqueOrThrow({
         where: {
           id: ctx.session.user.id,
-        }
+        },
       });
-      
+
+      if (!teamId) throw new Error("Team not found");
+
       const { problems } = await ctx.prisma.competition.findUniqueOrThrow({
         where: {
           type: "TEAM",
@@ -71,11 +110,13 @@ export const teamRouter = createTRPCRouter({
           problems: true,
         },
       });
-      
+
       let score = 0;
 
       problems.forEach(({ id, answer }) => {
-        if (answers.find(({ problemId }) => problemId === id)?.answer === answer) {
+        if (
+          answers.find(({ problemId }) => problemId === id)?.answer === answer
+        ) {
           score++;
         }
       });
@@ -84,13 +125,11 @@ export const teamRouter = createTRPCRouter({
         where: {
           id: teamId,
         },
-        
+
         data: {
           endTime,
           score,
         },
       });
     }),
-          
-
 });

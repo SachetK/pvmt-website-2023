@@ -16,7 +16,9 @@ export function getStaticPaths() {
   };
 }
 
-const Leaderboard: NextPage<{ option: Uppercase<Exclude<Option, "team">> }> = ({ option }) => {
+const Leaderboard: NextPage<{ option: Uppercase<Exclude<Option, "team">> }> = ({
+  option,
+}) => {
   const {
     data,
     hasNextPage,
@@ -95,10 +97,12 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const ssg = generateSSGHelper();
 
   const contest = z
-    .enum(["algebra", "geometry", "combinatorics", "team"])
+    .enum(["algebra", "geometry", "combinatorics"])
     .parse(params?.contest);
 
-  const test = contest.toUpperCase() as Uppercase<Exclude<typeof contest, "team">>;
+  const test = contest.toUpperCase() as Uppercase<
+    Exclude<typeof contest, "team">
+  >;
 
   await ssg.reports.byScore.prefetch({ contest: test });
 

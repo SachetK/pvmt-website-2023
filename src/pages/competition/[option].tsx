@@ -14,7 +14,6 @@ export function getStaticPaths() {
       { params: { option: "algebra" } },
       { params: { option: "geometry" } },
       { params: { option: "combinatorics" } },
-      { params: { option: "team" } },
     ],
     fallback: "blocking",
   };
@@ -26,7 +25,9 @@ const Test: React.FC<{
 }> = ({ option, userId }) => {
   const { data: problems, isLoading } =
     api.problems.getBySubject.useQuery(option);
+
   const ctx = api.useContext();
+
   const { mutateAsync: submitTest, isLoading: isSubmitting } =
     api.reports.submitTest.useMutation({
       onSuccess: () => {
@@ -104,9 +105,9 @@ const Test: React.FC<{
   );
 };
 
-const CompetitionPage: NextPage<{ option: Uppercase<Exclude<Option, "team">> }> = ({
-  option,
-}) => {
+const CompetitionPage: NextPage<{
+  option: Uppercase<Exclude<Option, "team">>;
+}> = ({ option }) => {
   const { data: session, status } = useSession();
 
   const ctx = api.useContext();
@@ -187,13 +188,24 @@ const CompetitionPage: NextPage<{ option: Uppercase<Exclude<Option, "team">> }> 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const ssg = generateSSGHelper();
 
-  const option = z
+  const maybeOption = z
     .enum(["algebra", "geometry", "combinatorics"])
-    .parse(params?.option);
+    .safeParse(params?.option);
 
-  const test = option.toUpperCase() as Uppercase<Exclude<typeof option, "team">>;
+  if (!maybeOption.success) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
 
-  await ssg.problems.getBySubject.prefetch(test);
+  const option = maybeOption.data.toUpperCase() as Uppercase<
+    Exclude<typeof maybeOption.data, "team">
+  >;
+
+  await ssg.problems.getBySubject.prefetch(option);
 
   return {
     props: {

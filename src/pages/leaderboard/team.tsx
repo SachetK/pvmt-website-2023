@@ -1,9 +1,6 @@
-import type { GetStaticProps, NextPage } from "next";
+import type { NextPage } from "next";
 import Head from "next/head";
-import Link from "next/link";
-import { generateSSGHelper } from "~/server/helpers/ssgHelpers";
 import { api } from "~/utils/api";
-import { OPTIONS } from "~/utils/options";
 
 const Leaderboard: NextPage = () => {
   const {
@@ -12,7 +9,7 @@ const Leaderboard: NextPage = () => {
     fetchNextPage,
     fetchPreviousPage,
     hasPreviousPage,
-  } = api.reports.allByScore.useInfiniteQuery(
+  } = api.teams.byScore.useInfiniteQuery(
     {},
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -22,47 +19,33 @@ const Leaderboard: NextPage = () => {
   return (
     <main>
       <Head>
-        <title>Leaderboard - Individual</title>
+        <title>Leaderboard | Team</title>
         <meta name="description" content="PVMT 2023" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="flex h-full min-h-screen flex-col">
-        <h1 className="text-center text-3xl font-bold">Leaderboard - Individual</h1>
-        <div className="flex flex-row justify-center">
-          {Object.entries(OPTIONS).map(([name, link], idx) => {
-            return (
-              <div
-                className="bg-slate-200 p-2 transition ease-in-out first:rounded-l-xl last:rounded-r-xl hover:bg-slate-400 hover:text-white focus:bg-slate-400 focus:text-white"
-                key={idx}
-              >
-                <Link href={`/leaderboard/${encodeURIComponent(link)}`}>
-                  {name}
-                </Link>
-              </div>
-            );
-          })}
-        </div>
+
+      <div className="flex min-h-screen flex-col">
+        <h1 className="text-center text-3xl font-bold">Leaderboard - Team</h1>
         <table className="mx-[25%] w-1/2 table-auto">
           <thead>
             <tr>
               <th>Rank</th>
-              <th>Username</th>
+              <th>Team Name</th>
               <th>Score</th>
             </tr>
           </thead>
           <tbody className="text-center">
             {data?.pages.map((page) =>
-              page.reports.map((report, idx) => (
-                <tr key={report.userId}>
+              page.teams.map((team, idx) => (
+                <tr key={team.id}>
                   <td>{idx + 1}</td>
-                  <td>{report.student.name}</td>
-                  <td>{report.score}</td>
+                  <td>{team.name}</td>
+                  <td>{team.score}</td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
-
         <div className="flex justify-center">
           {hasPreviousPage && (
             <button
@@ -86,18 +69,6 @@ const Leaderboard: NextPage = () => {
       </div>
     </main>
   );
-};
-
-export const getStaticProps: GetStaticProps = async () => {
-  const ssg = generateSSGHelper();
-
-  await ssg.reports.allByScore.prefetch({});
-
-  return {
-    props: {
-      trpcState: ssg.dehydrate(),
-    },
-  };
 };
 
 export default Leaderboard;
