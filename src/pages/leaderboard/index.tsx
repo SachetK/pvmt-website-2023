@@ -27,7 +27,9 @@ const Leaderboard: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="flex h-full min-h-screen flex-col">
-        <h1 className="text-center text-3xl font-bold">Leaderboard - Individual</h1>
+        <h1 className="text-center text-3xl font-bold">
+          Leaderboard - Individual
+        </h1>
         <div className="flex flex-row justify-center">
           {Object.entries(OPTIONS).map(([name, link], idx) => {
             return (

@@ -3,11 +3,7 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 
 export const problemsRouter = createTRPCRouter({
   getBySubject: publicProcedure
-    .input(
-      z
-        .enum(["ALGEBRA", "GEOMETRY", "COMBINATORICS", "TEAM", "TIEBREAKER"])
-        .optional()
-    )
+    .input(z.enum(["ALGEBRA", "GEOMETRY", "COMBINATORICS", "TEAM"]).optional())
     .query(async ({ input, ctx }) => {
       if (!input) {
         return [];
