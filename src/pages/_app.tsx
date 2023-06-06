@@ -1,6 +1,6 @@
 import { type AppType } from "next/app";
 import { type Session } from "next-auth";
-import { SessionProvider } from "next-auth/react";
+import { SessionProvider, useSession } from "next-auth/react";
 import { MathJaxContext } from "better-react-mathjax";
 
 import { api } from "~/utils/api";
@@ -24,9 +24,17 @@ const MyApp: AppType<{ session: Session | null }> = ({
 };
 
 const Header = () => {
+  const { status } = useSession();
+  const { data: team } = api.teams.byUser.useQuery(undefined, {
+    enabled: status === "authenticated",
+  });
+
   return (
     <>
-      <Link href="/" className="absolute left-4 top-4">
+      <Link
+        href={status === "authenticated" ? (team ? "/home" : "/register") : "/"}
+        className="absolute left-4 top-4"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"

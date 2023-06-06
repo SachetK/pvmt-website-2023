@@ -5,6 +5,25 @@ import { generateSSGHelper } from "~/server/helpers/ssgHelpers";
 import { api } from "~/utils/api";
 import { OPTIONS } from "~/utils/options";
 
+export const LeaderboardNavigation: React.FC = () => {
+  return (
+    <div className="flex flex-row justify-center">
+      {Object.entries(OPTIONS).map(([name, link], idx) => {
+        return (
+          <div
+            className="bg-slate-200 p-2 transition ease-in-out first:rounded-l-xl last:rounded-r-xl hover:bg-slate-400 hover:text-white focus:bg-slate-400 focus:text-white"
+            key={idx}
+          >
+            <Link href={`/leaderboard/${encodeURIComponent(link)}`}>
+              {name}
+            </Link>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
 const Leaderboard: NextPage = () => {
   const {
     data,
@@ -22,7 +41,7 @@ const Leaderboard: NextPage = () => {
   return (
     <main>
       <Head>
-        <title>Leaderboard - Individual</title>
+        <title>Leaderboard | Individual</title>
         <meta name="description" content="PVMT 2023" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -30,20 +49,8 @@ const Leaderboard: NextPage = () => {
         <h1 className="text-center text-3xl font-bold">
           Leaderboard - Individual
         </h1>
-        <div className="flex flex-row justify-center">
-          {Object.entries(OPTIONS).map(([name, link], idx) => {
-            return (
-              <div
-                className="bg-slate-200 p-2 transition ease-in-out first:rounded-l-xl last:rounded-r-xl hover:bg-slate-400 hover:text-white focus:bg-slate-400 focus:text-white"
-                key={idx}
-              >
-                <Link href={`/leaderboard/${encodeURIComponent(link)}`}>
-                  {name}
-                </Link>
-              </div>
-            );
-          })}
-        </div>
+
+        <LeaderboardNavigation />
         <table className="mx-[25%] w-1/2 table-auto">
           <thead>
             <tr>

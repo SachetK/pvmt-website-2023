@@ -7,7 +7,6 @@ import { generateSSGHelper } from "~/server/helpers/ssgHelpers";
 import { api } from "~/utils/api";
 import ErrorComponent from "next/error";
 
-
 const Test: React.FC<{ teamId: string }> = ({ teamId }) => {
   const { data: problems, isLoading } =
     api.problems.getBySubject.useQuery("TEAM");

@@ -4,6 +4,7 @@ import { z } from "zod";
 import { generateSSGHelper } from "~/server/helpers/ssgHelpers";
 import { api } from "~/utils/api";
 import type { Option } from "~/utils/options";
+import { LeaderboardNavigation } from ".";
 
 export function getStaticPaths() {
   return {
@@ -48,6 +49,7 @@ const Leaderboard: NextPage<{ option: Uppercase<Exclude<Option, "team">> }> = ({
           Leaderboard -{" "}
           {`${option.substring(0, 1)}${option.substring(1).toLowerCase()}`}
         </h1>
+        <LeaderboardNavigation />
         <table className="mx-[25%] w-1/2 table-auto">
           <thead>
             <tr>

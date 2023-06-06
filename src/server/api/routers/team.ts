@@ -21,17 +21,17 @@ export const teamRouter = createTRPCRouter({
     }),
 
   byUser: protectedProcedure.query(async ({ ctx }) => {
-    const { teamId } = await ctx.prisma.user.findUniqueOrThrow({
+    const user = await ctx.prisma.user.findUnique({
       where: {
         id: ctx.session.user.id,
       },
     });
 
-    if (!teamId) throw new Error("Team not found");
+    if (!user?.teamId) throw new Error("Team not found");
 
     return await ctx.prisma.team.findUnique({
       where: {
-        id: teamId,
+        id: user.teamId,
       },
     });
   }),
@@ -148,4 +148,26 @@ export const teamRouter = createTRPCRouter({
         },
       });
     }),
+
+    select: protectedProcedure
+    .input(
+      z.object({
+        name: z.string(),
+      })
+    )
+    .mutation(async ({ input: { name }, ctx }) => {
+      return await ctx.prisma.user.update({
+        where: {
+          id: ctx.session.user.id,
+        },
+
+        data: {
+          team: {
+            connect: {
+              name,
+            }
+          }
+        }
+      })
+    })
 });

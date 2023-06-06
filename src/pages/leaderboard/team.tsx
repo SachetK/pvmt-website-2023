@@ -1,6 +1,7 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import { api } from "~/utils/api";
+import { LeaderboardNavigation } from ".";
 
 const Leaderboard: NextPage = () => {
   const {
@@ -26,6 +27,7 @@ const Leaderboard: NextPage = () => {
 
       <div className="flex min-h-screen flex-col">
         <h1 className="text-center text-3xl font-bold">Leaderboard - Team</h1>
+        <LeaderboardNavigation />
         <table className="mx-[25%] w-1/2 table-auto">
           <thead>
             <tr>
