@@ -2,11 +2,13 @@ import type { GetStaticProps, NextPage } from "next";
 import { useSession } from "next-auth/react";
 import ErrorComponent from "next/error";
 import Head from "next/head";
+import { useMemo, useRef } from "react";
 import { z } from "zod";
 import { LoadingPage, LoadingSpinner } from "~/components/loading";
 import { generateSSGHelper } from "~/server/helpers/ssgHelpers";
 import { api } from "~/utils/api";
 import type { Option } from "~/utils/options";
+import useCountdown from "~/utils/useCountdown";
 
 export function getStaticPaths() {
   return {
@@ -22,11 +24,20 @@ export function getStaticPaths() {
 const Test: React.FC<{
   option: Uppercase<Exclude<Option, "team">>;
   userId: string;
-}> = ({ option, userId }) => {
+  startTime: Date;
+}> = ({ option, userId, startTime }) => {
   const { data: problems, isLoading } =
     api.problems.getBySubject.useQuery(option);
 
   const ctx = api.useContext();
+
+  const form = useRef<HTMLFormElement>(null);
+
+  const finalTime = useMemo(() => {
+    return new Date(startTime.getTime() + 60 * 60 * 1000);
+  }, [startTime]);
+
+  const { minutes, seconds } = useCountdown(finalTime);
 
   const { mutateAsync: submitTest, isLoading: isSubmitting } =
     api.reports.submitTest.useMutation({
@@ -38,7 +49,24 @@ const Test: React.FC<{
       },
     });
 
-  if (!problems) return <div>No problems found</div>;
+  if (minutes < 30 && minutes > 15) {
+    alert("You have 30 minutes left!");
+  }
+
+  if (minutes < 15 && minutes > 5) {
+    alert("You have 15 minutes left!");
+  }
+
+  if (minutes < 5 && minutes > 0) {
+    alert("You have 5 minutes left!");
+  }
+
+  if (minutes <= 0 && seconds <= 0) {
+    alert("Time is up!");
+    form.current?.submit();
+  }
+
+  if (!problems || problems.length === 0) return <div>No problems found</div>;
   if (isLoading) return <LoadingSpinner />;
 
   return (
@@ -68,7 +96,14 @@ const Test: React.FC<{
           answers: answers as { problemId: string; answer: number }[],
         });
       }}
+      ref={form}
     >
+      <div className="flex flex-row space-x-2">
+        <span className="font-bold">Time Remaining:</span>
+        <span>{`${minutes.toString().length < 2 ? `0${minutes}` : minutes}:${
+          seconds.toString().length < 2 ? `0${seconds}` : seconds
+        }`}</span>
+      </div>
       {problems.map((problem, idx) => (
         <div
           key={idx}
@@ -171,7 +206,11 @@ const CompetitionPage: NextPage<{
         </div>
         {report?.draft ? (
           <div className="flex w-full justify-center">
-            <Test option={option} userId={session?.user.id ?? ""} />
+            <Test
+              option={option}
+              userId={session?.user.id ?? ""}
+              startTime={report.startTime}
+            />
           </div>
         ) : (
           report && (

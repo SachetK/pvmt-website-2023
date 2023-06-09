@@ -71,6 +71,78 @@ export const teamRouter = createTRPCRouter({
       };
     }),
 
+  all: publicProcedure
+    .input(
+      z.object({
+        limit: z.number().default(10),
+        cursor: z
+          .object({
+            id: z.string().cuid(),
+          })
+          .optional(),
+      })
+    )
+    .query(async ({ input: { limit, cursor }, ctx }) => {
+      const teams = await ctx.prisma.team.findMany({
+        orderBy: {
+          name: "desc",
+        },
+        take: limit + 1,
+        cursor: cursor ? cursor : undefined,
+        include: {
+          members: true,
+        },
+      });
+
+      let nextCursor: typeof cursor | undefined = undefined;
+
+      if (teams.length > limit) {
+        const nextItem = teams.pop();
+        nextCursor = {
+          id: nextItem?.id ?? "",
+        };
+      }
+
+      return {
+        teams,
+        nextCursor,
+      };
+    }),
+
+  join: protectedProcedure
+    .input(
+      z.object({
+        name: z.string(),
+      })
+    )
+    .mutation(async ({ input: { name }, ctx }) => {
+      const team = await ctx.prisma.team.findUniqueOrThrow({
+        where: {
+          name,
+        },
+
+        include: {
+          members: true,
+        },
+      });
+
+      if (team.members.length >= 3) throw new Error("Cannot join team");
+
+      return await ctx.prisma.user.update({
+        where: {
+          id: ctx.session.user.id,
+        },
+
+        data: {
+          team: {
+            connect: {
+              name,
+            },
+          },
+        },
+      });
+    }),
+
   startTest: protectedProcedure
     .input(
       z.object({
@@ -149,7 +221,7 @@ export const teamRouter = createTRPCRouter({
       });
     }),
 
-    select: protectedProcedure
+  select: protectedProcedure
     .input(
       z.object({
         name: z.string(),
@@ -165,9 +237,9 @@ export const teamRouter = createTRPCRouter({
           team: {
             connect: {
               name,
-            }
-          }
-        }
-      })
-    })
+            },
+          },
+        },
+      });
+    }),
 });
