@@ -5,7 +5,6 @@ import { generateSSGHelper } from "~/server/helpers/ssgHelpers";
 import { api } from "~/utils/api";
 import type { Option } from "~/utils/options";
 import { LeaderboardNavigation } from ".";
-import { useRouter } from "next/router";
 
 export function getStaticPaths() {
   return {
@@ -21,8 +20,7 @@ export function getStaticPaths() {
 const Leaderboard: NextPage<{ option: Uppercase<Exclude<Option, "team">> }> = ({
   option,
 }) => {
-  const router = useRouter();
-  void router.push("/home");
+  
 
   const {
     data,
