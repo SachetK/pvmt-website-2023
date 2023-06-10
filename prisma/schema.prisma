@@ -62,7 +62,7 @@ model User {
   sessions      Session[]
   reports       Report[]
   team          Team?     @relation(fields: [teamId], references: [id])
-  teamId        String?   @unique
+  teamId        String?   
   role          Role      @default(USER)
 
   @@index([teamId])

@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import Head from "next/head";
 import { useState } from "react";
 import { api } from "~/utils/api";
+import { LoadingSpinner } from "~/components/loading";
 
 const Registration: NextPage = () => {
   const { data: team } = api.teams.byUser.useQuery();
@@ -31,7 +32,7 @@ const TeamSelect: React.FC = () => {
 
   const router = useRouter();
 
-  const { mutate: joinTeam } = api.teams.join.useMutation({
+  const { mutate: joinTeam, isLoading: isJoining } = api.teams.join.useMutation({
     onSuccess: () => {
       setJoin("");
       void router.push("/home");
@@ -131,6 +132,7 @@ const TeamSelect: React.FC = () => {
             >
               Join
             </button>
+            {isJoining && <LoadingSpinner />}
           </label>
         </div>
       )}
