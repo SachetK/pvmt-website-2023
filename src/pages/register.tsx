@@ -87,7 +87,7 @@ const TeamSelect: React.FC = () => {
             {page.teams
               .filter(
                 ({ name, members }) =>
-                  name.includes(search) && members.length < 3
+                  name.toLowerCase().includes(search.toLowerCase()) && members.length < 3
               )
               .map((team) => {
                 return (
