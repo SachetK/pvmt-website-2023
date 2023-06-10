@@ -22,7 +22,7 @@ const Leaderboard: NextPage<{ option: Uppercase<Exclude<Option, "team">> }> = ({
   option,
 }) => {
   const router = useRouter();
-  void router.push("/home")
+  void router.push("/home");
 
   const {
     data,

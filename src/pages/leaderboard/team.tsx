@@ -18,9 +18,9 @@ const Leaderboard: NextPage = () => {
     }
   );
 
-    const router = useRouter();
+  const router = useRouter();
 
-    void router.push("/home");
+  void router.push("/home");
 
   return (
     <main>

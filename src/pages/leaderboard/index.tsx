@@ -27,7 +27,7 @@ export const LeaderboardNavigation: React.FC = () => {
 
 const Leaderboard: NextPage = () => {
   const router = useRouter();
-  void router.push("/home")
+  void router.push("/home");
 
   const {
     data,

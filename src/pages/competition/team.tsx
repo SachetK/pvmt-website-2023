@@ -34,7 +34,7 @@ const Test: React.FC<{ teamId: string; startTime: Date }> = ({
         });
       },
     });
- 
+
   useEffect(() => {
     if (isFinished) {
       alert("Time's up!");

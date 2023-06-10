@@ -91,9 +91,16 @@ const TeamSelect: React.FC = () => {
               )
               .map((team) => {
                 return (
-                  <div key={team.id}>
+                  <div
+                    key={team.id}
+                    className="mx-2 flex w-full flex-row items-center justify-between space-x-2"
+                  >
                     <h1>{team.name}</h1>
-                    <button type="button" onClick={() => setJoin(team.name)}>
+                    <button
+                      type="button"
+                      onClick={() => setJoin(team.name)}
+                      className="rounded-full bg-blue-600 px-4 py-2 font-bold text-white"
+                    >
                       Join
                     </button>
                   </div>
@@ -103,10 +110,14 @@ const TeamSelect: React.FC = () => {
         );
       })}
       {join && (
-        <div className="flex gap-2">
-          <label>
+        <div>
+          <label className="m-2">
             Are you sure you want to join {join}?
-            <button type="button" onClick={() => setJoin("")}>
+            <button
+              type="button"
+              onClick={() => setJoin("")}
+              className="m-2 rounded-full  bg-blue-400 px-4 py-2 text-white"
+            >
               Cancel
             </button>
             <button
@@ -116,6 +127,7 @@ const TeamSelect: React.FC = () => {
                   name: join,
                 })
               }
+              className="mr-2 rounded-full bg-blue-400 px-4 py-2 text-white"
             >
               Join
             </button>
