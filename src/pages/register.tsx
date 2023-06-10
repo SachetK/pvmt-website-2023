@@ -103,7 +103,7 @@ const TeamSelect: React.FC = () => {
         );
       })}
       {join && (
-        <div>
+        <div className="flex gap-2">
           <label>
             Are you sure you want to join {join}?
             <button type="button" onClick={() => setJoin("")}>

@@ -1,8 +1,9 @@
+import { MathJax } from "better-react-mathjax";
 import type { GetStaticProps, NextPage } from "next";
 import { useSession } from "next-auth/react";
 import ErrorComponent from "next/error";
 import Head from "next/head";
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { z } from "zod";
 import { LoadingPage, LoadingSpinner } from "~/components/loading";
 import { generateSSGHelper } from "~/server/helpers/ssgHelpers";
@@ -30,14 +31,16 @@ const Test: React.FC<{
     api.problems.getBySubject.useQuery(option);
 
   const ctx = api.useContext();
-
+  
   const form = useRef<HTMLFormElement>(null);
+  const submit = useRef<HTMLButtonElement>(null);
 
   const finalTime = useMemo(() => {
-    return new Date(startTime.getTime() + 60 * 60 * 1000);
+    return new Date(startTime.getTime() + 1 * 1000);
   }, [startTime]);
 
-  const { minutes, seconds } = useCountdown(finalTime);
+  const { minutes, seconds, isFinished } = useCountdown(finalTime);
+
 
   const { mutateAsync: submitTest, isLoading: isSubmitting } =
     api.reports.submitTest.useMutation({
@@ -49,22 +52,11 @@ const Test: React.FC<{
       },
     });
 
-  if (minutes < 30 && minutes > 15) {
-    alert("You have 30 minutes left!");
-  }
-
-  if (minutes < 15 && minutes > 5) {
-    alert("You have 15 minutes left!");
-  }
-
-  if (minutes < 5 && minutes > 0) {
-    alert("You have 5 minutes left!");
-  }
-
-  if (minutes <= 0 && seconds <= 0) {
-    alert("Time is up!");
-    form.current?.submit();
-  }
+    useEffect(() => {
+      if(isFinished) {
+        form.current?.requestSubmit(submit.current);
+      }
+    }, [isFinished]);
 
   if (!problems || problems.length === 0) return <div>No problems found</div>;
   if (isLoading) return <LoadingSpinner />;
@@ -89,7 +81,7 @@ const Test: React.FC<{
             }
           })
           .filter((x) => x !== null);
-
+        
         void submitTest({
           contest: option,
           endTime: new Date(),
@@ -107,13 +99,13 @@ const Test: React.FC<{
       {problems.map((problem, idx) => (
         <div
           key={idx}
-          className="flex flex-col space-y-2 rounded-2xl bg-blue-200 p-4"
+          className="flex flex-col space-y-2 rounded-2xl bg-blue-200 p-4 w-1/3"
         >
-          <div className="flex w-1/2 flex-row space-x-2">
+          <div className="flex w-full flex-row space-x-2">
             <span className="font-bold">{idx + 1}.</span>
-            <span>{problem.question}</span>
+            <MathJax>{problem.question}</MathJax>
           </div>
-          <div className="flex flex-row space-x-2">
+          <div className="flex flex-row space-x-2 w-full">
             <label>
               <span>Answer: </span>
               <input
@@ -131,6 +123,7 @@ const Test: React.FC<{
           className="w-fit rounded-full border-b-4 border-red-500 bg-red-400 px-3 py-2  active:border-b-2 disabled:cursor-not-allowed disabled:border-opacity-50 disabled:opacity-50"
           disabled={isSubmitting}
           type="submit"
+          ref={submit}
         >
           Submit Test
         </button>
