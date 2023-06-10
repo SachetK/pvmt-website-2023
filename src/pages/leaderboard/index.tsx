@@ -26,8 +26,8 @@ export const LeaderboardNavigation: React.FC = () => {
 };
 
 const Leaderboard: NextPage = () => {
-  const router = useRouter();
-  void router.push("/home");
+  // const router = useRouter();
+  // void router.push("/home");
 
   const {
     data,
@@ -42,6 +42,8 @@ const Leaderboard: NextPage = () => {
     }
   );
 
+  return <></>
+  
   return (
     <main>
       <Head>

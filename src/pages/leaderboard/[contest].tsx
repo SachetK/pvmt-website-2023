@@ -37,6 +37,8 @@ const Leaderboard: NextPage<{ option: Uppercase<Exclude<Option, "team">> }> = ({
     }
   );
 
+    return <></>
+
   return (
     <main>
       <Head>
