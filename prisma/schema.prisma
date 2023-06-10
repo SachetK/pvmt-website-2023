@@ -63,6 +63,7 @@ model User {
   reports       Report[]
   team          Team?     @relation(fields: [teamId], references: [id])
   teamId        String?   @unique
+  role          Role      @default(USER)
 
   @@index([teamId])
 }
@@ -126,4 +127,9 @@ enum Category {
   GEOMETRY
   TEAM
   COMBINATORICS
+}
+
+enum Role {
+  USER
+  ADMIN
 }
