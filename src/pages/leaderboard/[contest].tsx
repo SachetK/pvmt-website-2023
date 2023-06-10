@@ -109,10 +109,14 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   await ssg.reports.byScore.prefetch({ contest: test });
 
   return {
-    props: {
-      trpcState: ssg.dehydrate(),
-      option: contest.toUpperCase(),
+    redirect: {
+      destination: `/`,
+      permanent: false,
     },
+    // props: {
+    //   trpcState: ssg.dehydrate(),
+    //   option: contest.toUpperCase(),
+    // },
   };
 };
 

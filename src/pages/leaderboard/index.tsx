@@ -103,9 +103,13 @@ export const getStaticProps: GetStaticProps = async () => {
   await ssg.reports.allByScore.prefetch({});
 
   return {
-    props: {
-      trpcState: ssg.dehydrate(),
+    redirect: {
+      destination: `/`,
+      permanent: false,
     },
+    // props: {
+    //   trpcState: ssg.dehydrate(),
+    // },
   };
 };
 

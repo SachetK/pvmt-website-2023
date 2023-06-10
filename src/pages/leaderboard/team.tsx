@@ -2,6 +2,7 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import { api } from "~/utils/api";
 import { LeaderboardNavigation } from ".";
+import { useRouter } from "next/router";
 
 const Leaderboard: NextPage = () => {
   const {
@@ -16,6 +17,10 @@ const Leaderboard: NextPage = () => {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
     }
   );
+
+    const router = useRouter();
+
+    void router.push("/home");
 
   return (
     <main>

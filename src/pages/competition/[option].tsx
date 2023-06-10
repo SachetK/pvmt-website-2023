@@ -31,7 +31,7 @@ const Test: React.FC<{
     api.problems.getBySubject.useQuery(option);
 
   const ctx = api.useContext();
-  
+
   const form = useRef<HTMLFormElement>(null);
   const submit = useRef<HTMLButtonElement>(null);
 
@@ -40,7 +40,6 @@ const Test: React.FC<{
   }, [startTime]);
 
   const { minutes, seconds, isFinished } = useCountdown(finalTime);
-
 
   const { mutateAsync: submitTest, isLoading: isSubmitting } =
     api.reports.submitTest.useMutation({
@@ -52,11 +51,11 @@ const Test: React.FC<{
       },
     });
 
-    useEffect(() => {
-      if(isFinished) {
-        form.current?.requestSubmit(submit.current);
-      }
-    }, [isFinished]);
+  useEffect(() => {
+    if (isFinished) {
+      form.current?.requestSubmit(submit.current);
+    }
+  }, [isFinished]);
 
   if (!problems || problems.length === 0) return <div>No problems found</div>;
   if (isLoading) return <LoadingSpinner />;
@@ -81,7 +80,7 @@ const Test: React.FC<{
             }
           })
           .filter((x) => x !== null);
-        
+
         void submitTest({
           contest: option,
           endTime: new Date(),
@@ -99,13 +98,13 @@ const Test: React.FC<{
       {problems.map((problem, idx) => (
         <div
           key={idx}
-          className="flex flex-col space-y-2 rounded-2xl bg-blue-200 p-4 w-1/3"
+          className="flex w-1/3 flex-col space-y-2 rounded-2xl bg-blue-200 p-4"
         >
           <div className="flex w-full flex-row space-x-2">
             <span className="font-bold">{idx + 1}.</span>
             <MathJax>{problem.question}</MathJax>
           </div>
-          <div className="flex flex-row space-x-2 w-full">
+          <div className="flex w-full flex-row space-x-2">
             <label>
               <span>Answer: </span>
               <input

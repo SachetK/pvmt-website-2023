@@ -6,12 +6,25 @@ import { LoadingSpinner, LoadingPage } from "~/components/loading";
 import { generateSSGHelper } from "~/server/helpers/ssgHelpers";
 import { api } from "~/utils/api";
 import ErrorComponent from "next/error";
+import { useMemo, useRef, useEffect } from "react";
+import useCountdown from "~/utils/useCountdown";
 
-const Test: React.FC<{ teamId: string }> = ({ teamId }) => {
+const Test: React.FC<{ teamId: string; startTime: Date }> = ({
+  teamId,
+  startTime,
+}) => {
   const { data: problems, isLoading } =
     api.problems.getBySubject.useQuery("TEAM");
 
   const ctx = api.useContext();
+  const finalTime = useMemo(() => {
+    return new Date(startTime.getTime() + 60 * 60 * 1000);
+  }, [startTime]);
+
+  const { minutes, seconds, isFinished } = useCountdown(finalTime);
+
+  const form = useRef<HTMLFormElement>(null);
+  const submit = useRef<HTMLButtonElement>(null);
 
   const { mutateAsync: submitTest, isLoading: isSubmitting } =
     api.teams.submitTest.useMutation({
@@ -21,7 +34,11 @@ const Test: React.FC<{ teamId: string }> = ({ teamId }) => {
         });
       },
     });
-
+  useEffect(() => {
+    if (isFinished) {
+      form.current?.requestSubmit(submit.current);
+    }
+  }, [isFinished]);
   if (!problems) return <div>No problems found</div>;
   if (isLoading) return <LoadingSpinner />;
 
@@ -51,7 +68,14 @@ const Test: React.FC<{ teamId: string }> = ({ teamId }) => {
           answers: answers as { problemId: string; answer: number }[],
         });
       }}
+      ref={form}
     >
+      <div className="flex flex-row space-x-2">
+        <span className="font-bold">Time Remaining:</span>
+        <span>{`${minutes.toString().length < 2 ? `0${minutes}` : minutes}:${
+          seconds.toString().length < 2 ? `0${seconds}` : seconds
+        }`}</span>
+      </div>
       {problems.map((problem, idx) => (
         <div
           key={idx}
@@ -79,6 +103,7 @@ const Test: React.FC<{ teamId: string }> = ({ teamId }) => {
           className="w-fit rounded-full border-b-4 border-red-500 bg-red-400 px-3 py-2  active:border-b-2 disabled:cursor-not-allowed disabled:border-opacity-50 disabled:opacity-50"
           disabled={isSubmitting}
           type="submit"
+          ref={submit}
         >
           Submit Test
         </button>
@@ -147,7 +172,7 @@ const CompetitionPage: NextPage = () => {
         </div>
         {team?.submitted ? (
           <div className="flex w-full justify-center">
-            <Test teamId={team?.id ?? ""} />
+            <Test teamId={team?.id ?? ""} startTime={team.startTime} />
           </div>
         ) : (
           team && (

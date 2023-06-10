@@ -7,8 +7,8 @@ import { api } from "~/utils/api";
 const Registration: NextPage = () => {
   const { data: team } = api.teams.byUser.useQuery();
   const router = useRouter();
-  
-  if(team) void router.push("/home");
+
+  if (team) void router.push("/home");
 
   return (
     <main>

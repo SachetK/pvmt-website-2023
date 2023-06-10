@@ -51,20 +51,20 @@ const Header = () => {
         </svg>
       </Link>
       <button
-          type="button"
-          className="fixed right-20 top-4 rounded-xl bg-slate-100 px-4 py-2 text-lg text-center transition ease-in-out hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white"
-          onClick={() =>
-            status === "unauthenticated"
-              ? void signIn("google", {
-                  callbackUrl: team ? "/home" : "/register",
-                })
-              : void signOut({
-                  callbackUrl: "/",
-                })
-          }
-        >
-          {status === "unauthenticated" ? "Sign In" : "Sign Out"}
-        </button>
+        type="button"
+        className="fixed right-20 top-4 rounded-xl bg-slate-100 px-4 py-2 text-center text-lg transition ease-in-out hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white"
+        onClick={() =>
+          status === "unauthenticated"
+            ? void signIn("google", {
+                callbackUrl: team ? "/home" : "/register",
+              })
+            : void signOut({
+                callbackUrl: "/",
+              })
+        }
+      >
+        {status === "unauthenticated" ? "Sign In" : "Sign Out"}
+      </button>
       <Link href="/leaderboard" className="fixed right-4 top-4">
         <svg
           xmlns="http://www.w3.org/2000/svg"
