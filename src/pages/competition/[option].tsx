@@ -190,7 +190,7 @@ const CompetitionPage: NextPage<{
               onClick={() => {
                 void startTest({ contest: option });
               }}
-              disabled={isStarting}
+              disabled={isStarting || option === "ALGEBRA" || option === "GEOMETRY" || option === "COMBINATORICS"}
               // disabled
               className="w-fit rounded-md bg-blue-500 p-4 font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
             >

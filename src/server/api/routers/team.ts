@@ -74,7 +74,7 @@ export const teamRouter = createTRPCRouter({
   all: publicProcedure
     .input(
       z.object({
-        limit: z.number().default(10),
+        limit: z.number().default(1000),
         cursor: z
           .object({
             id: z.string().cuid(),

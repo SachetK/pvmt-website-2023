@@ -18,7 +18,7 @@ const Test: React.FC<{ teamId: string; startTime: Date }> = ({
 
   const ctx = api.useContext();
   const finalTime = useMemo(() => {
-    return new Date(startTime.getTime() + 60 * 60 * 1000);
+    return new Date(startTime.getTime() + 50 * 60 * 1000);
   }, [startTime]);
 
   const { minutes, seconds, isFinished } = useCountdown(finalTime);

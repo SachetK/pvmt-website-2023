@@ -40,17 +40,10 @@ const TeamSelect: React.FC = () => {
   });
 
   const {
-    data: teams,
-    fetchNextPage,
-    fetchPreviousPage,
-  } = api.teams.all.useInfiniteQuery(
-    {
-      limit: 10,
-    },
-    {
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
-    }
-  );
+    data,
+  } = api.teams.all.useQuery({});
+
+  return <></>
 
   return (
     <div className="flex flex-col rounded-2xl bg-slate-100">
@@ -63,7 +56,7 @@ const TeamSelect: React.FC = () => {
           autoFocus
           className="rounded-xl px-4 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-600"
         />
-        <button
+        {/* <button
           type="button"
           className="rounded-xl bg-blue-700 px-4 py-2 font-bold text-white transition-opacity duration-300 ease-in-out hover:opacity-80 active:opacity-60"
           onClick={() => void fetchPreviousPage()}
@@ -76,16 +69,16 @@ const TeamSelect: React.FC = () => {
           onClick={() => void fetchNextPage()}
         >
           Next
-        </button>
+        </button> */}
       </div>
 
-      {teams?.pages.map((page, idx) => {
+      {/* {teams?.pages.map((page, idx) => {
         return (
           <div
             key={idx}
             className="m-2 flex justify-center space-x-2 rounded-2xl bg-white p-2"
-          >
-            {page.teams
+          > */}
+            {data?.teams
               .filter(
                 ({ name, members }) =>
                   name.toLowerCase().includes(search.toLowerCase()) && members.length < 3
@@ -107,9 +100,9 @@ const TeamSelect: React.FC = () => {
                   </div>
                 );
               })}
-          </div>
-        );
-      })}
+          {/* </div> */}
+        {/* // ); */}
+      {/* // })} */}
       {join && (
         <div>
           <label className="m-2">
