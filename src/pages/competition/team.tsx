@@ -34,11 +34,14 @@ const Test: React.FC<{ teamId: string; startTime: Date }> = ({
         });
       },
     });
+ 
   useEffect(() => {
     if (isFinished) {
+      alert("Time's up!");
       form.current?.requestSubmit(submit.current);
     }
   }, [isFinished]);
+
   if (!problems) return <div>No problems found</div>;
   if (isLoading) return <LoadingSpinner />;
 

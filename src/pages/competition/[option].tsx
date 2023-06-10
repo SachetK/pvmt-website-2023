@@ -53,6 +53,7 @@ const Test: React.FC<{
 
   useEffect(() => {
     if (isFinished) {
+      alert("Time's up!");
       form.current?.requestSubmit(submit.current);
     }
   }, [isFinished]);
@@ -98,11 +99,11 @@ const Test: React.FC<{
       {problems.map((problem, idx) => (
         <div
           key={idx}
-          className="flex w-1/3 flex-col space-y-2 rounded-2xl bg-blue-200 p-4"
+          className="flex w-5/12 flex-col space-y-2 rounded-2xl bg-blue-200 p-4"
         >
-          <div className="flex w-full flex-row space-x-2">
+          <div className="flex w-full flex-row space-x-2 mx-2">
             <span className="font-bold">{idx + 1}.</span>
-            <MathJax>{problem.question}</MathJax>
+            <MathJax className="w-fit">{problem.question}</MathJax>
           </div>
           <div className="flex w-full flex-row space-x-2">
             <label>
