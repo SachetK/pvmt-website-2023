@@ -5,6 +5,9 @@ import { LeaderboardNavigation } from ".";
 import { useRouter } from "next/router";
 
 const Leaderboard: NextPage = () => {
+  const router = useRouter();
+
+  void router.push("/home");
   const {
     data,
     hasNextPage,
@@ -18,9 +21,7 @@ const Leaderboard: NextPage = () => {
     }
   );
 
-  const router = useRouter();
-
-  void router.push("/home");
+  
 
   return (
     <main>
