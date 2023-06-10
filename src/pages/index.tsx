@@ -30,7 +30,7 @@ const Home: NextPage = () => {
           onClick={() =>
             status === "unauthenticated"
               ? void signIn("google", {
-                  callbackUrl: team ? "/home" : "/register",
+                  callbackUrl: "/home",
                 })
               : void signOut({
                   callbackUrl: "/",
