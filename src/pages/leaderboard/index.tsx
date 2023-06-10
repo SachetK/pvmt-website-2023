@@ -1,6 +1,7 @@
 import type { GetStaticProps, NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { generateSSGHelper } from "~/server/helpers/ssgHelpers";
 import { api } from "~/utils/api";
 import { OPTIONS } from "~/utils/options";
@@ -25,6 +26,9 @@ export const LeaderboardNavigation: React.FC = () => {
 };
 
 const Leaderboard: NextPage = () => {
+  const router = useRouter();
+  void router.push("/home")
+
   const {
     data,
     hasNextPage,

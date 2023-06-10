@@ -166,7 +166,8 @@ const CompetitionPage: NextPage = () => {
                   startTime: new Date(),
                 });
               }}
-              disabled={isStarting}
+              // disabled={isStarting}
+              disabled
               className="w-fit rounded-md bg-blue-500 p-4 font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isStarting ? "Starting..." : "Start Test"}
