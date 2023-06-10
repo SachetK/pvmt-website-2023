@@ -65,6 +65,9 @@ const Header = () => {
       >
         {status === "unauthenticated" ? "Sign In" : "Sign Out"}
       </button>
+      <p className="fixed bottom-4 right-4 text-lg">
+        {status === "authenticated" && team && `Team: ${team.name}`}
+      </p>
       <Link href="/leaderboard" className="fixed right-4 top-4">
         <svg
           xmlns="http://www.w3.org/2000/svg"
