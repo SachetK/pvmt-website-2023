@@ -36,7 +36,7 @@ const Test: React.FC<{
   const submit = useRef<HTMLButtonElement>(null);
 
   const finalTime = useMemo(() => {
-    return new Date(startTime.getTime() + 1 * 1000);
+    return new Date(startTime.getTime() + 60 * 60 * 1000);
   }, [startTime]);
 
   const { minutes, seconds, isFinished } = useCountdown(finalTime);
